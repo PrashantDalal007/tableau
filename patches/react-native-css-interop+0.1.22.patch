@@ -1,0 +1,75 @@
+diff --git a/node_modules/react-native-css-interop/.cache/android.js b/node_modules/react-native-css-interop/.cache/android.js
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-css-interop/.cache/ios.js b/node_modules/react-native-css-interop/.cache/ios.js
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-css-interop/.cache/macos.js b/node_modules/react-native-css-interop/.cache/macos.js
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-css-interop/.cache/native.js b/node_modules/react-native-css-interop/.cache/native.js
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-css-interop/.cache/windows.js b/node_modules/react-native-css-interop/.cache/windows.js
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-css-interop/dist/css-to-rn/parseDeclaration.js b/node_modules/react-native-css-interop/dist/css-to-rn/parseDeclaration.js
+index 59ea66e..fb966da 100644
+--- a/node_modules/react-native-css-interop/dist/css-to-rn/parseDeclaration.js
++++ b/node_modules/react-native-css-interop/dist/css-to-rn/parseDeclaration.js
+@@ -1761,12 +1761,20 @@ function parseAspectRatio(aspectRatio) {
+         return "auto";
+     }
+     else {
+-        if (aspectRatio.ratio[0] === aspectRatio.ratio[1]) {
++        if (
++            !aspectRatio ||
++            !Array.isArray(aspectRatio.ratio) ||
++            aspectRatio.ratio.length !== 2
++          ) {
++            console.error("❌ Invalid aspectRatio:", aspectRatio);
++            return undefined;
++          }
++          
++          if (aspectRatio.ratio[0] === aspectRatio.ratio[1]) {
+             return 1;
+-        }
+-        else {
+-            return aspectRatio.ratio.join(" / ");
+-        }
++          }
++          
++          return aspectRatio.ratio.join(" / ");
+     }
+ }
+ function parseDimension({ unit, value }, options) {
+diff --git a/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts b/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+index bf095a5..23df853 100644
+--- a/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
++++ b/node_modules/react-native-css-interop/src/css-to-rn/parseDeclaration.ts
+@@ -2639,15 +2639,24 @@ function parseAspectRatio(
+   // This is missing types
+   aspectRatio: any,
+ ): RuntimeValueDescriptor {
++  
+   if (aspectRatio.auto) {
+     return "auto";
+-  } else {
++  } else if (
++    Array.isArray(aspectRatio.ratio) &&
++    aspectRatio.ratio.length === 2 &&
++    typeof aspectRatio.ratio[0] === "number" &&
++    typeof aspectRatio.ratio[1] === "number"
++  ) {
+     if (aspectRatio.ratio[0] === aspectRatio.ratio[1]) {
+       return 1;
+     } else {
+       return aspectRatio.ratio.join(" / ");
+     }
++  } else {
++    return undefined;
+   }
++  
+ }
+ 
+ function parseDimension(
