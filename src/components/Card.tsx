@@ -17,6 +17,7 @@ type CardProps = {
   keyInsight?: string;
   topBreakdown?: { label: string; value: number }[];
   previousValue?: string;
+  onAdd?: () => void;
 };
 
 type RootStackParamList = {
@@ -35,6 +36,7 @@ const Card: React.FC<CardProps> = (props) => {
     trendInsight,
     keyInsight,
     topBreakdown,
+    onAdd,
   } = props;
 
   const [cardWidth, setCardWidth] = useState(0);
@@ -58,6 +60,17 @@ const Card: React.FC<CardProps> = (props) => {
         className="bg-white rounded-xl shadow-sm p-4 max-w-md h-[540px] flex flex-col justify-start"
         onLayout={handleLayout}
       >
+        {onAdd && (
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation();
+              onAdd();
+            }}
+            className="absolute top-2 right-2 z-10"
+          >
+            <Text className="text-2xl text-blue-600">+</Text>
+          </Pressable>
+        )}
         {/* Header */}
         <Text className="text-xs text-gray-400 mb-1">
           {timeRange || "This Month"}

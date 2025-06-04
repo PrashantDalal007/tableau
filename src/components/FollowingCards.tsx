@@ -1,10 +1,8 @@
 // /src/components/FollowingCards.tsx
 
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import { MetricCard } from "../types";
-import { fetchFollowedKPIs } from "../api/followedKPIs";
+import React, { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { getFollowedKPIs } from "../redux/slices/kpiSlice";
 import MetricCardList from "./MetricCardList";
 
 type FollowingCardsProps = {
@@ -12,16 +10,12 @@ type FollowingCardsProps = {
 };
 
 const FollowingCards: React.FC<FollowingCardsProps> = ({ isGrid = false }) => {
-  const metrics = useSelector((state: RootState) => state.kpi.data);
-  const [data, setData] = useState<MetricCard[] | null>(metrics);
+  const dispatch = useAppDispatch();
+  const data = useAppSelector((state) => state.kpi.followingKPIs);
 
   useEffect(() => {
-    const fetch = async () => {
-      const result = await fetchFollowedKPIs();
-      setData(result);
-    };
-    fetch();
-  }, []);
+    dispatch(getFollowedKPIs());
+  }, [dispatch]);
 
   return <MetricCardList data={data} isGrid={isGrid} />;
 };

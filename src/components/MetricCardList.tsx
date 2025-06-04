@@ -8,9 +8,10 @@ import { MetricCard } from "../types";
 type Props = {
   data: MetricCard[] | null;
   isGrid?: boolean;
+  onAdd?: (title: string) => void;
 };
 
-const MetricCardList: React.FC<Props> = ({ data, isGrid = false }) => {
+const MetricCardList: React.FC<Props> = ({ data, isGrid = false, onAdd }) => {
   if (!data) return <Text>Loading...</Text>;
 
   return (
@@ -22,7 +23,7 @@ const MetricCardList: React.FC<Props> = ({ data, isGrid = false }) => {
       }
     >
       {data.map((metric, index) => (
-        <Card key={index} {...metric} />
+        <Card key={index} {...metric} onAdd={onAdd ? () => onAdd(metric.title) : undefined} />
       ))}
     </View>
   );

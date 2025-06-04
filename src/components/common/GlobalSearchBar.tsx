@@ -20,7 +20,7 @@ const GlobalSearchBar = () => {
         autoCapitalize="none"
         autoCorrect={false}
         style={Platform.select({
-          web: { outlineStyle: "none" }, // <-- Remove browser outline on web
+          web: { outlineStyle: "none" } as any, // Remove browser outline on web
         })}
       />
     </View>
