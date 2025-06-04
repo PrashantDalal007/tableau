@@ -1,31 +1,25 @@
 // /src/screens/BrowseMetricsScreen.tsx
 
-import React, { useEffect, useState } from "react";
-import { ScrollView, Text, View, useWindowDimensions, Alert } from "react-native";
-import { MetricCard } from "../types";
-import { fetchAllAvailableKPIs, removeKPIFromBrowse } from "../api/browseKPIs";
-import { addKPIToFollowed } from "../api/followedKPIs";
+import React from "react";
+import { ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { addCardToFollowing } from "../redux/slices/followingSlice";
+import { removeCardFromBrowse } from "../redux/slices/browseSlice";
 import MetricCardList from "../components/MetricCardList";
+import { MetricCard } from "../types";
+import { showToast } from "../utils/notifications";
 
 const BrowseMetricsScreen = () => {
   const { width } = useWindowDimensions();
   const isWide = width >= 768;
-  const [data, setData] = useState<MetricCard[] | null>(null);
+  const dispatch = useAppDispatch();
+  const data = useAppSelector((state) => state.browse.data);
 
-  const handleAdd = async (metric: MetricCard) => {
-    await addKPIToFollowed(metric);
-    await removeKPIFromBrowse(metric.title);
-    setData((prev) => prev?.filter((m) => m.title !== metric.title) || null);
-    Alert.alert("Card added to your following");
+  const handleAdd = (metric: MetricCard) => {
+    dispatch(addCardToFollowing(metric));
+    dispatch(removeCardFromBrowse(metric.title));
+    showToast("Card added to your following");
   };
-
-  useEffect(() => {
-    const fetch = async () => {
-      const result = await fetchAllAvailableKPIs();
-      setData(result);
-    };
-    fetch();
-  }, []);
 
   return (
     <ScrollView className="bg-white px-4 py-6">

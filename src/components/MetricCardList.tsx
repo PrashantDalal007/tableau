@@ -3,6 +3,7 @@
 import React from "react";
 import { Text, View } from "react-native";
 import Card from "./Card";
+import BrowseCardItem from "./BrowseCards/BrowseCardItem";
 import { MetricCard } from "../types";
 
 type Props = {
@@ -24,12 +25,15 @@ const MetricCardList: React.FC<Props> = ({ data, isGrid = false, onAdd, showAdd 
       }
     >
       {data.map((metric, index) => (
-        <Card
-          key={index}
-          {...metric}
-          showAdd={showAdd}
-          onAdd={() => onAdd && onAdd(metric)}
-        />
+        showAdd ? (
+          <BrowseCardItem
+            key={index}
+            metric={metric}
+            onAddToFollowing={() => onAdd && onAdd(metric)}
+          />
+        ) : (
+          <Card key={index} {...metric} />
+        )
       ))}
     </View>
   );
