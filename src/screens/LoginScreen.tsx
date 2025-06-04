@@ -95,8 +95,8 @@ const LoginScreen = () => {
             style={{
               width: logoDetails.logoSizes.large.width,
               height: logoDetails.logoSizes.large.height,
-              contentFit: "contain",
             }}
+            contentFit="contain"
           />
         )}
 

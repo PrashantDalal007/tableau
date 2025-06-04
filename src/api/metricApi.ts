@@ -8,7 +8,7 @@ export const fetchMetricDetail = async (
 ): Promise<MetricDetail> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(mockMetricDetail);
+      resolve(mockMetricDetail as unknown as MetricDetail);
     }, 500);
   });
 };
