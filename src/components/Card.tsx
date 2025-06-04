@@ -3,6 +3,7 @@ import { Text, View, Pressable, LayoutChangeEvent } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Feather } from "@expo/vector-icons";
 
 type CardProps = {
   title: string;
@@ -17,6 +18,8 @@ type CardProps = {
   keyInsight?: string;
   topBreakdown?: { label: string; value: number }[];
   previousValue?: string;
+  onAdd?: () => void;
+  showAdd?: boolean;
 };
 
 type RootStackParamList = {
@@ -49,15 +52,22 @@ const Card: React.FC<CardProps> = (props) => {
     text.length > limit ? `${text.slice(0, limit)}...` : text;
 
   return (
-    <Pressable
-      onPress={() => navigation.navigate("KPIDetailScreen", { kpi: props })}
-      className="mb-6"
-      android_ripple={{ color: "#e5e7eb" }}
-    >
-      <View
-        className="bg-white rounded-xl shadow-sm p-4 max-w-md h-[540px] flex flex-col justify-start"
-        onLayout={handleLayout}
+    <View className="relative mb-6" onLayout={handleLayout}>
+      {props.showAdd && (
+        <Pressable
+          onPress={props.onAdd}
+          className="absolute right-2 top-2 z-10 bg-white rounded-full p-1"
+        >
+          <Feather name="plus" size={20} color="#2563eb" />
+        </Pressable>
+      )}
+      <Pressable
+        onPress={() => navigation.navigate("KPIDetailScreen", { kpi: props })}
+        android_ripple={{ color: "#e5e7eb" }}
       >
+        <View
+          className="bg-white rounded-xl shadow-sm p-4 max-w-md h-[540px] flex flex-col justify-start"
+        >
         {/* Header */}
         <Text className="text-xs text-gray-400 mb-1">
           {timeRange || "This Month"}
@@ -127,6 +137,7 @@ const Card: React.FC<CardProps> = (props) => {
         )}
       </View>
     </Pressable>
+  </View>
   );
 };
 
