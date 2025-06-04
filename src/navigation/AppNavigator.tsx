@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { validateToken } from "../redux/slices/tokenSlice";
 import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 import BrowseMetricsScreen from "../screens/BrowseMetricsScreen";
+import SearchResultsScreen from "../screens/SearchResultsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +61,13 @@ const AppNavigator = () => {
             {() => (
               <AuthenticatedLayout>
                 <BrowseMetricsScreen />
+              </AuthenticatedLayout>
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="SearchResults">
+            {() => (
+              <AuthenticatedLayout>
+                <SearchResultsScreen />
               </AuthenticatedLayout>
             )}
           </Stack.Screen>
