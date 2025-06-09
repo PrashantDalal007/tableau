@@ -1,7 +1,7 @@
 // /src/navigation/AppNavigator.tsx
 
-import React, { useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import React, { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 
 import HomeScreen from "../../app/index";
@@ -11,10 +11,11 @@ import LogoutScreen from "../screens/LogoutScreen";
 import SessionExpiredScreen from "../screens/SessionExpiredScreen";
 import SSOCallbackScreen from "../screens/SSOCallbackScreen";
 
+import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { validateToken } from "../redux/slices/tokenSlice";
-import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 import BrowseMetricsScreen from "../screens/BrowseMetricsScreen";
+import SearchResultsScreen from "../screens/SearchResultsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -63,7 +64,13 @@ const AppNavigator = () => {
               </AuthenticatedLayout>
             )}
           </Stack.Screen>
-
+          <Stack.Screen name="SearchResults">
+            {() => (
+              <AuthenticatedLayout>
+                <SearchResultsScreen />
+              </AuthenticatedLayout>
+            )}
+          </Stack.Screen>
           <Stack.Screen name="KPIDetailScreen">
             {() => (
               <AuthenticatedLayout>

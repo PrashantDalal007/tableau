@@ -19,7 +19,9 @@ const HomePage = () => {
       <View className="container mx-auto">
         {/* Today's Pulse block */}
         <View className={isWide ? "w-full md:w-1/2 pr-4 mb-6" : "mb-6"}>
-          <Text className="text-2xl font-semibold mb-1">Today&apos;s Pulse</Text>
+          <Text className="text-2xl font-semibold mb-1">
+            Today&apos;s Pulse
+          </Text>
           <Text className="text-xs text-gray-500 mb-3">
             Last updated about 3 hours ago
           </Text>

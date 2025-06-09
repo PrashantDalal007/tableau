@@ -1,6 +1,7 @@
 // /src/types/index.ts
 
 export type MetricCard = {
+  id: string; // <-- REQUIRED for all KPIs
   title: string;
   value: string;
   percentage: string;
@@ -10,7 +11,12 @@ export type MetricCard = {
   currency: boolean;
   timeRange?: string;
   trendInsight?: string;
+  summaryDate?: string;
+  summaryValue?: string;
+  rangeLow?: string; // Optional, used for range KPIs
+  rangeHigh?: string; // Optional, used for range KPIs
+  isFollowed?: boolean; // Optional, used for followed KPIs
   keyInsight?: string;
   topBreakdown?: { label: string; value: number }[];
-  previousValue?: string; // ✅ ADD THIS
+  previousValue?: string;
 };

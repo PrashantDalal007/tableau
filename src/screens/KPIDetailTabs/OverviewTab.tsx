@@ -1,11 +1,15 @@
 // /src/screens/KPIDetailTabs/OverviewTab.tsx
 
+import QuestionPills from "@/src/components/QuestionPills";
 import React from "react";
-import { ScrollView, View, Text, useWindowDimensions } from "react-native";
+import { ScrollView, Text, useWindowDimensions, View } from "react-native";
 import { LineChart } from "react-native-chart-kit";
+import AlertBox from "../../components/AlertBox";
+import KPIDescription from "../../components/KPIDescription";
 
 type OverviewTabProps = {
   kpi: {
+    title: string;
     value: string;
     percentage: string;
     percentageColor: "green" | "red";
@@ -20,38 +24,85 @@ type OverviewTabProps = {
 
 const OverviewTab: React.FC<OverviewTabProps> = ({ kpi }) => {
   const { width } = useWindowDimensions();
-  const containerWidth = Math.min(width - 32, 800);
+  const containerWidth = Math.min(width - 32, 700);
 
   const percentageStyle =
-    kpi.percentageColor === "green" ? "text-green-600" : "text-red-600";
+    kpi.percentageColor === "green"
+      ? "text-green-600 bg-green-100"
+      : "text-red-600 bg-red-100";
 
   return (
-    <ScrollView className="px-4 py-6 bg-white">
-      <View className="w-full max-w-4xl mx-auto flex flex-col items-center gap-6">
-        {/* ✅ KPI Summary Card */}
-        <View className="w-full max-w-lg bg-white border border-gray-200 rounded-xl shadow-md p-4 text-center">
-          <Text className="text-3xl font-semibold text-gray-900">
-            {kpi.value}
-          </Text>
-          <Text className="text-sm text-gray-500">Jan 1–Jan 29, 2024</Text>
-          <Text className={`text-sm font-medium ${percentageStyle}`}>
-            {kpi.percentage}
-            {kpi.previousValue ? ` (${kpi.previousValue})` : ""} vs. prior
-            period (Dec 1–Dec 29, 2023)
-          </Text>
-        </View>
-
-        {/* ⚠️ Trend Insight Alert */}
-        {kpi.trendInsight && (
-          <View className="w-full max-w-lg bg-yellow-50 border border-yellow-300 rounded-lg p-3 shadow-sm">
-            <Text className="text-sm text-yellow-800 text-center">
-              {kpi.trendInsight}
-            </Text>
+    <ScrollView className="bg-gray-50 px-2 py-8 min-h-screen">
+      <View className="container mx-auto flex flex-col items-start gap-8">
+        <View className="flex flex-row-reverse items-center justify-between w-full mb-4">
+          {/* Trend/Key Insight Alert */}
+          {kpi.trendInsight && (
+            <AlertBox
+              type="info"
+              message={kpi.trendInsight}
+              title="Trend Alert"
+            />
+          )}
+          {/* HERO CARD */}
+          <View
+            className="
+  w-full max-w-2xl 
+  bg-white
+  rounded-2xl
+  border border-gray-200
+  px-10 py-7
+  flex flex-row items-center
+  gap-x-8
+  mb-8
+  ring-1 ring-gray-100
+"
+          >
+            {/* Value on the left */}
+            <View className="flex-shrink-0 pr-6 border-r-2 border-gray-300">
+              <Text className="text-5xl font-extrabold text-blue-800 tracking-tight leading-none">
+                {kpi.value}
+              </Text>
+            </View>
+            {/* Meta on the right */}
+            <View className="flex flex-col flex-1 pl-6">
+              <Text className="uppercase text-xs font-extrabold tracking-widest text-blue-400 mb-1">
+                {kpi.title}
+              </Text>
+              <Text className="text-sm font-bold text-gray-600 mb-1">
+                {kpi.timeRange || "This Month"}
+              </Text>
+              <View className="flex-row items-center gap-x-2 mb-0.5">
+                <Text
+                  className={`
+          text-base font-bold rounded-full px-3 py-1 shadow
+          ${
+            kpi.percentageColor === "green"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }
+        `}
+                >
+                  {kpi.percentage}
+                  {kpi.previousValue ? ` (${kpi.previousValue})` : ""}
+                </Text>
+                <Text className="text-xs text-gray-600 font-medium">
+                  vs prior period
+                </Text>
+              </View>
+              {kpi.previousValue && (
+                <Text className="text-xs text-gray-600">
+                  ({kpi.previousValue} last period)
+                </Text>
+              )}
+              {/* Any additional subtext/trend */}
+            </View>
           </View>
-        )}
+        </View>
+        {/* Description */}
+        <KPIDescription kpi={kpi} />
 
-        {/* 📈 Chart Box */}
-        <View className="w-full bg-white rounded-xl shadow border border-gray-100 p-4">
+        {/* Chart Box */}
+        <View className="mx-auto bg-white rounded-xl shadow border border-gray-100 p-6 mb-3">
           <LineChart
             data={{
               labels: ["Jan 1", "Jan 31"],
@@ -75,44 +126,21 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ kpi }) => {
               },
             }}
             bezier
-            style={{ borderRadius: 12 }}
+            style={{ borderRadius: 16 }}
           />
         </View>
+        <View className="max-w-screen-xl mx-auto">
+          <QuestionPills />
+        </View>
 
-        {/* 🧠 Key Insight */}
+        {/* Key Insight */}
         {kpi.keyInsight && (
-          <Text className="text-lg font-semibold text-center text-gray-800 max-w-2xl">
-            {kpi.keyInsight}
-          </Text>
+          <View className="w-full bg-gray-50 border border-gray-200 rounded-lg p-4 mb-2 shadow-sm">
+            <Text className="text-base font-semibold text-center text-gray-800">
+              {kpi.keyInsight}
+            </Text>
+          </View>
         )}
-
-        {/* 💬 Description */}
-        <Text className="text-sm text-gray-600 text-center max-w-2xl leading-relaxed">
-          {kpi.description}
-        </Text>
-
-        {/* 🔗 Suggested Follow-ups */}
-        <View className="flex flex-row flex-wrap gap-3 justify-center pt-2">
-          <Text className="text-sm text-blue-600 underline hover:text-blue-800">
-            Which Product Name increased the most?
-          </Text>
-          <Text className="text-sm text-blue-600 underline hover:text-blue-800">
-            Which Product Name decreased the most?
-          </Text>
-          <Text className="text-sm text-blue-600 underline hover:text-blue-800">
-            Which Product Type increased the most?
-          </Text>
-        </View>
-
-        {/* ❓ Bottom Insight Prompt */}
-        <View className="border-t border-gray-200 pt-4 mt-4 text-center">
-          <Text className="text-sm font-medium text-gray-500">
-            Top insight about this change |
-          </Text>
-          <Text className="text-sm text-gray-500">
-            Does Average Order Value (AOV) have a new trend?
-          </Text>
-        </View>
       </View>
     </ScrollView>
   );

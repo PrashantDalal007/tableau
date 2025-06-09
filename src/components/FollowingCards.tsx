@@ -1,8 +1,7 @@
-// /src/components/FollowingCards.tsx
-
 import React, { useEffect } from "react";
+import { Alert, Platform, ToastAndroid } from "react-native";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { getFollowedKPIs } from "../redux/slices/kpiSlice";
+import { fetchFollowedKPIs, unfollowKPI } from "../redux/thunks/kpiThunks";
 import MetricCardList from "./MetricCardList";
 
 type FollowingCardsProps = {
@@ -11,13 +10,29 @@ type FollowingCardsProps = {
 
 const FollowingCards: React.FC<FollowingCardsProps> = ({ isGrid = false }) => {
   const dispatch = useAppDispatch();
-  const data = useAppSelector((state) => state.kpi.followingKPIs);
+  const data = useAppSelector((state) => state.kpis.followed);
+  const loading = useAppSelector((state) => state.kpis.loading);
 
   useEffect(() => {
-    dispatch(getFollowedKPIs());
+    dispatch(fetchFollowedKPIs());
   }, [dispatch]);
 
-  return <MetricCardList data={data} isGrid={isGrid} />;
+  const handleUnfollow = async (id: string) => {
+    await dispatch(unfollowKPI(id));
+    if (Platform.OS === "android") {
+      ToastAndroid.show("Card removed from your following", ToastAndroid.SHORT);
+    } else {
+      Alert.alert("Card removed from your following");
+    }
+  };
+
+  return (
+    <MetricCardList
+      data={loading ? null : data}
+      isGrid={isGrid}
+      onUnfollow={handleUnfollow}
+    />
+  );
 };
 
 export default FollowingCards;

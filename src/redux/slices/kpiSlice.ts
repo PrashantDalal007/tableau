@@ -1,75 +1,87 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+// src/redux/slices/kpiSlice.ts
+
+import { createSlice } from "@reduxjs/toolkit";
 import { MetricCard } from "../../types";
 import {
-  fetchAllAvailableKPIs,
-  addKPIToFollowing,
-} from "../../api/browseKPIs";
-import { fetchFollowedKPIs } from "../../api/followedKPIs";
+  fetchAllKPIs,
+  fetchFollowedKPIs,
+  followKPI,
+  unfollowKPI,
+} from "../thunks/kpiThunks";
 
-interface KPIState {
-  browseKPIs: MetricCard[];
-  followingKPIs: MetricCard[];
+type KPIState = {
+  all: MetricCard[];
+  followed: MetricCard[];
   loading: boolean;
   error: string | null;
-}
+};
 
 const initialState: KPIState = {
-  browseKPIs: [],
-  followingKPIs: [],
+  all: [],
+  followed: [],
   loading: false,
   error: null,
 };
 
-export const getBrowseKPIs = createAsyncThunk(
-  "kpi/getBrowseKPIs",
-  async () => {
-    const data = await fetchAllAvailableKPIs();
-    return data;
-  }
-);
-
-export const getFollowedKPIs = createAsyncThunk(
-  "kpi/getFollowedKPIs",
-  async () => {
-    const data = await fetchFollowedKPIs();
-    return data;
-  }
-);
-
-export const followKPI = createAsyncThunk(
-  "kpi/followKPI",
-  async (title: string) => {
-    const data = await addKPIToFollowing(title);
-    return data;
-  }
-);
-
 const kpiSlice = createSlice({
-  name: "kpi",
+  name: "kpis",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getBrowseKPIs.pending, (state) => {
+      .addCase(fetchAllKPIs.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
-      .addCase(getBrowseKPIs.fulfilled, (state, action) => {
+      .addCase(fetchAllKPIs.fulfilled, (state, action) => {
         state.loading = false;
-        state.browseKPIs = action.payload;
+        state.all = action.payload;
       })
-      .addCase(getBrowseKPIs.rejected, (state, action) => {
+      .addCase(fetchAllKPIs.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || null;
+        state.error = action.error.message || "Failed to fetch all KPIs";
       })
-      .addCase(getFollowedKPIs.fulfilled, (state, action) => {
-        state.followingKPIs = action.payload;
+      .addCase(fetchFollowedKPIs.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchFollowedKPIs.fulfilled, (state, action) => {
+        state.loading = false;
+        state.followed = action.payload;
+      })
+      .addCase(fetchFollowedKPIs.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch followed KPIs";
+      })
+      .addCase(unfollowKPI.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(unfollowKPI.fulfilled, (state, action) => {
+        state.loading = false;
+        state.followed = state.followed.filter(
+          (kpi) => kpi.id !== action.payload
+        );
+      })
+      .addCase(unfollowKPI.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to unfollow KPI";
+      })
+      .addCase(followKPI.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
       .addCase(followKPI.fulfilled, (state, action) => {
-        if (!action.payload) return;
-        state.browseKPIs = state.browseKPIs.filter(
-          (k) => k.title !== action.payload!.title
-        );
-        state.followingKPIs.push(action.payload);
+        state.loading = false;
+        // Add KPI to followed if not already there
+        const kpiToAdd = state.all.find((kpi) => kpi.id === action.payload);
+        if (kpiToAdd && !state.followed.some((kpi) => kpi.id === kpiToAdd.id)) {
+          state.followed.push(kpiToAdd);
+        }
+      })
+      .addCase(followKPI.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to follow KPI";
       });
   },
 });

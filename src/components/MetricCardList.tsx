@@ -1,4 +1,4 @@
-// /src/components/MetricCardList.tsx
+// src/components/MetricCardList.tsx
 
 import React from "react";
 import { Text, View } from "react-native";
@@ -8,10 +8,16 @@ import { MetricCard } from "../types";
 type Props = {
   data: MetricCard[] | null;
   isGrid?: boolean;
-  onAdd?: (title: string) => void;
+  onAdd?: (id: string) => void;
+  onUnfollow?: (id: string) => void;
 };
 
-const MetricCardList: React.FC<Props> = ({ data, isGrid = false, onAdd }) => {
+const MetricCardList: React.FC<Props> = ({
+  data,
+  isGrid = false,
+  onAdd,
+  onUnfollow,
+}) => {
   if (!data) return <Text>Loading...</Text>;
 
   return (
@@ -23,7 +29,12 @@ const MetricCardList: React.FC<Props> = ({ data, isGrid = false, onAdd }) => {
       }
     >
       {data.map((metric, index) => (
-        <Card key={index} {...metric} onAdd={onAdd ? () => onAdd(metric.title) : undefined} />
+        <Card
+          key={metric.id || index}
+          {...metric}
+          onAdd={onAdd ? () => onAdd(metric.id) : undefined}
+          onUnfollow={onUnfollow ? () => onUnfollow(metric.id) : undefined}
+        />
       ))}
     </View>
   );

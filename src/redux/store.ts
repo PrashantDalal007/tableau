@@ -7,7 +7,7 @@ import tokenReducer from "./slices/tokenSlice";
 
 const store = configureStore({
   reducer: {
-    kpi: kpiReducer,
+    kpis: kpiReducer,
     auth: authReducer,
     tokenStatus: tokenReducer,
   },

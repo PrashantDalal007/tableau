@@ -1,6 +1,7 @@
 // src/components/HeaderBar.tsx
+import { CircleUserRound } from "lucide-react-native";
 import React from "react";
-import { View, Text, Image, Pressable } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import GlobalSearchBar from "./common/GlobalSearchBar";
 
 const HeaderBar = () => {
@@ -8,18 +9,16 @@ const HeaderBar = () => {
     <View className="w-full bg-white px-4 py-3 border-b border-gray-200">
       <View className="flex-row items-center justify-between w-full container mx-auto">
         {/* Left: Brand Title */}
-        <Text className="text-xl font-semibold text-black">Tableau Pulse</Text>
+        <Text className="text-3xl font-semibold text-black">Canary</Text>
 
         {/* Right: Search and Avatar */}
-        <View className="flex-row items-center space-x-4">
+        <View className="flex-row items-center gap-6">
           <GlobalSearchBar />
           <Pressable onPress={() => console.log("Open Profile")}>
-            <Image
-              source={{
-                uri: "https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff&size=128",
-              }}
-              className="w-9 h-9 rounded-full"
-            />
+            {/* Avatar Icon */}
+            <Text className="text-white bg-gray-500 rounded-full hover:bg-black transition-colors">
+              <CircleUserRound size={32} strokeWidth={1.5} />
+            </Text>
           </Pressable>
         </View>
       </View>
