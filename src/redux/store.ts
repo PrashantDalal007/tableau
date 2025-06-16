@@ -4,12 +4,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import kpiReducer from "./slices/kpiSlice";
 import authReducer from "./slices/authSlice";
 import tokenReducer from "./slices/tokenSlice";
+import questionsReducer from "./slices/questionsSlice";
 
 const store = configureStore({
   reducer: {
     kpis: kpiReducer,
     auth: authReducer,
     tokenStatus: tokenReducer,
+    questions: questionsReducer,
   },
 });
 

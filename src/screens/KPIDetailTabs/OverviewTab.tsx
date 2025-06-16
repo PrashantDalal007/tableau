@@ -1,14 +1,24 @@
 // /src/screens/KPIDetailTabs/OverviewTab.tsx
 
 import QuestionPills from "@/src/components/QuestionPills";
-import React from "react";
-import { ScrollView, Text, useWindowDimensions, View } from "react-native";
+import { fetchQuestions } from "@/src/redux/slices/questionsSlice";
+import { RootState } from "@/src/redux/store";
+import React, { useEffect } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { LineChart } from "react-native-chart-kit";
+import { useDispatch, useSelector } from "react-redux";
 import AlertBox from "../../components/AlertBox";
 import KPIDescription from "../../components/KPIDescription";
 
 type OverviewTabProps = {
   kpi: {
+    id: string; // <-- REQUIRED for fetching questions
     title: string;
     value: string;
     percentage: string;
@@ -26,10 +36,17 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ kpi }) => {
   const { width } = useWindowDimensions();
   const containerWidth = Math.min(width - 32, 700);
 
-  const percentageStyle =
-    kpi.percentageColor === "green"
-      ? "text-green-600 bg-green-100"
-      : "text-red-600 bg-red-100";
+  const dispatch = useDispatch();
+  const { questionsByKpiId, loading, error } = useSelector(
+    (state: RootState) => state.questions
+  );
+  const questions = questionsByKpiId[kpi.id] || [];
+
+  useEffect(() => {
+    if (kpi.id && !questions.length) {
+      dispatch(fetchQuestions(kpi.id));
+    }
+  }, [kpi.id, dispatch]);
 
   return (
     <ScrollView className="bg-gray-50 px-2 py-8 min-h-screen">
@@ -46,16 +63,16 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ kpi }) => {
           {/* HERO CARD */}
           <View
             className="
-  w-full max-w-2xl 
-  bg-white
-  rounded-2xl
-  border border-gray-200
-  px-10 py-7
-  flex flex-row items-center
-  gap-x-8
-  mb-8
-  ring-1 ring-gray-100
-"
+              w-full max-w-2xl 
+              bg-white
+              rounded-2xl
+              border border-gray-200
+              px-10 py-7
+              flex flex-row items-center
+              gap-x-8
+              mb-8
+              ring-1 ring-gray-100
+            "
           >
             {/* Value on the left */}
             <View className="flex-shrink-0 pr-6 border-r-2 border-gray-300">
@@ -74,13 +91,13 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ kpi }) => {
               <View className="flex-row items-center gap-x-2 mb-0.5">
                 <Text
                   className={`
-          text-base font-bold rounded-full px-3 py-1 shadow
-          ${
-            kpi.percentageColor === "green"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }
-        `}
+                    text-base font-bold rounded-full px-3 py-1 shadow
+                    ${
+                      kpi.percentageColor === "green"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }
+                  `}
                 >
                   {kpi.percentage}
                   {kpi.previousValue ? ` (${kpi.previousValue})` : ""}
@@ -129,8 +146,24 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ kpi }) => {
             style={{ borderRadius: 16 }}
           />
         </View>
-        <View className="max-w-screen-xl mx-auto">
-          <QuestionPills />
+
+        {/* Dynamic Questions Section */}
+        <View className="max-w-screen-xl mx-auto min-h-[60px]">
+          {loading ? (
+            <View className="items-center justify-center py-4">
+              {/* NativeWind ActivityIndicator looks good! */}
+              <ActivityIndicator size="small" color="#2563eb" />
+              <Text className="mt-2 text-blue-700 font-semibold">
+                Loading questions...
+              </Text>
+            </View>
+          ) : error ? (
+            <View className="items-center justify-center py-4">
+              <Text className="text-red-600 font-semibold">Error: {error}</Text>
+            </View>
+          ) : (
+            <QuestionPills questions={questions} />
+          )}
         </View>
 
         {/* Key Insight */}
